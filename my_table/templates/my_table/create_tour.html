@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+{% csrf_token %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+
+<body>
+
+    <div class="form-group">
+        <label for="area">ภาค:</label>
+        <select class="form-control" id="area">
+            {% for area_name in area %}
+            <option value="{{area_name.id}}">{{area_name}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="province">จังหวัด:</label>
+        <select class="form-control" id="province">
+        </select>
+        <form action="{% url 'my_table:create_my_table'%}" method="post">
+            {% csrf_token %}
+            <label for="tour">สถานที่ท่องเที่ยว:</label>
+            <select class="form-control" id="tour" name="tour">
+            </select>
+
+            <label for="note">หมายเหตุ:</label>
+            <input type="text" id="note" name="note">
+
+            <label for="tour_date">วันที่ไปเที่ยว</label>
+            <input type="datetime-local" id="tour_date" name="tour_date">
+            <input type="text" id="plan_id" name="plan_id" value={{ plan_id }} hidden>
+            <input type="submit" value="เพิ่มรายการ" />
+        </form>
+
+        <form action="{% url 'my_table:detail' plan_id %}">
+            <input type="submit" value="ย้อนกลับ" />
+        </form>
+</body>
+
+</html>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+    integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous">
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        // Select area to filter Province
+        $("#area").change(function () {
+            $("#province").empty()
+            var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+            $.post("province_in_area", {
+                area_id_ref: $("#area").val(),
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            }, function (data) {
+                data.forEach(element => {
+                    console.log(element)
+                    $("#province").append($("<option></option>")
+                        .attr("value", element.prov_id)
+                        .text(element.prov_name));
+                });
+            })
+        });
+
+        // Select Province to filter Tour
+        $("#province").change(function () {
+            $("#tour").empty()
+            var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+            $.post("tour_in_province", {
+                prov_id_ref: $("#province").val(),
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            }, function (data) {
+                data.forEach(element => {
+                    console.log(element)
+                    $("#tour").append($("<option></option>")
+                        .attr("value", element.tour_id)
+                        .text(element.tour_name));
+                });
+            })
+        });
+    });
+</script>

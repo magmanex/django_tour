@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <big>สร้าง Plan กันเถอะ</big>
+    <form action="{% url 'my_table:save_plan'%}" method="post">
+        {% csrf_token %}
+        <label for="plan_name">ชื่อแผน:</label>
+        <input type="text" id="plan_name" name="plan_name" placeholder="ไปเที่ยวกันนนน">
+        <input type="submit" value="เพิ่ม plan" />
+    </form>
+
+    <form action="{% url 'my_table:index' %}">
+        <input type="submit" value="ย้อนกลับ">
+    </form>
+
+</body>
+
+</html>
